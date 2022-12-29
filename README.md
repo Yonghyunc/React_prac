@@ -17,3 +17,17 @@
 
 
 비원시 타입 : 한 번에 여러 개의 값
+
+
+
+수많은 파일 -> 패키지 - 어떤 파일 ? package.json
+
+scripts : 많이 사용하는 git 명령어 저장   
+dependencies : 외부 패키지    
+``` json
+  "dependencies": {
+    "randomcolor": "^0.6.2"
+  }
+```
+> ^ : 해당 버전 이상 
+
