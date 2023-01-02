@@ -366,3 +366,577 @@ const Container = ({children}) => {
 
 export default Container;
 ```
+
+
+
+<br><br>
+
+---
+
+# SimpleDiary 연습
+1️⃣ 사용자 입력 및 배열 리스트 처리하기   
+2️⃣ React Lifecycle과 API   
+3️⃣ ReactApp 프로처럼 성능 최적화하기 with 도구 사용    
+4️⃣ React 컴포넌트 트리에 전역 데이터 공급하기    
+
+<br><br>
+
+### DiaryEditor 컴포넌트
+작성자    
+일기 본문   
+감정 점수   
+
+`onChange={(e)=>{}}` 
+전달받은 이벤트 객체 e
+
+``` js
+// DiaryEditor.js
+
+import { useState } from "react";
+
+const DiaryEditor = () => {
+  const [author, setAuthor] = useState("");
+  const [content, setContent] = useState("");
+
+  return (
+    <div className="DiaryEditor">
+      <h2>오늘의 일기</h2>
+      <div>
+        <input 
+          value={author} 
+          onChange={(e)=>{
+            setAuthor(e.target.value);
+          }}
+        />
+      </div>
+      <div>
+        <textarea
+          value={content} 
+          onChange={(e)=>{
+            setContent(e.target.value);
+          }}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default DiaryEditor;
+```
+
+value => state 네임   
+onChange => e.target.value  
+
+⬇   
+동작이 비슷한 state들은 하나로 묶어줄 수 있음
+
+``` js
+// DiaryEditor.js
+
+import { useState } from "react";
+
+const DiaryEditor = () => {
+  const [state, setState] = useState({
+    author: "",
+    content: "",
+  })
+
+  return (
+    <div className="DiaryEditor">
+      <h2>오늘의 일기</h2>
+      <div>
+        <input 
+          name="author"
+          value={state.author} 
+          onChange={(e)=>{
+            setState({
+              author: e.target.value,
+              content: state.content,
+            });
+          }}
+        />
+      </div>
+      <div>
+        <textarea
+          value={state.content} 
+          onChange={(e)=>{
+            setState({
+              author: state.author,
+              content: e.target.value
+            });
+          }}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default DiaryEditor;
+```
+
+너무 많을 때 => spread 연산자 사용 O    
+```js
+setState({
+  ...state,
+  author: e.target.value,
+})
+```
+원래의 state를 먼저 펼쳐주고 변경하고자 하는 property를 마지막에 작성 !! (순서 주의 !!)   
+
+``` js
+import { useState } from "react";
+
+const DiaryEditor = () => {
+  const [state, setState] = useState({
+    author: "",
+    content: "",
+  });
+
+  const handleChangeState = (e) => {
+    setState({
+      ...state,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  return (
+    <div className="DiaryEditor">
+      <h2>오늘의 일기</h2>
+      <div>
+        <input 
+          name="author"
+          value={state.author} 
+          onChange={handleChangeState}
+        />
+      </div>
+      <div>
+        <textarea
+          name="content"
+          value={state.content} 
+          onChange={handleChangeState}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default DiaryEditor;
+```
+
+handleChangeState 하나로 onChange 동시 처리 
+> name이 있어야 함 !!     
+
+<br><br>
+
+특정 길이 이상의 input이 들어왔는지 확인    
+
+``` js
+  const handleSubmit = () => {
+    if (state.author.length < 1) {
+      alert("작성자는 최소 1글자 이상 입력해주세요");
+      return ;
+    } 
+    
+    if (state.content.length < 5) {
+      alert("일기 본문은 최소 5글자 이상 입력해주세요");
+      return ;
+    }
+    
+    alert("저장 성공");
+  };
+```
+> alert를 띄우는 것은 사용자 친화적이지 않음 -> focus
+
+어떤 DOM 요소에 focus를 줘야할까?     
+
+**useRef**
+
+React.MutableRefObject => html DOM 요소에 접근하는 기능   
+
+``` js
+import { useState, useRef } from "react";
+
+const DiaryEditor = () => {
+
+  const authorInput = useRef();
+  const contentInput = useRef();
+
+  ...
+
+  const handleSubmit = () => {
+    if (state.author.length < 1) {
+      // focus
+      authorInput.current.focus();
+      return ;
+    } 
+    
+    if (state.content.length < 5) {
+      contentInput.current.focus();
+      // focus
+      return ;
+    }
+
+    alert("저장 성공");
+  };
+  return (
+    <div className="DiaryEditor">
+      <h2>오늘의 일기</h2>
+      <div>
+        <input 
+          ref={authorInput}
+          name="author"
+          value={state.author} 
+          onChange={handleChangeState}
+        />
+      </div>
+      <div>
+        <textarea
+          ref={contentInput}
+          name="content"
+          value={state.content} 
+          onChange={handleChangeState}
+        />
+      </div>
+      ...
+    </div>
+  );
+};
+
+```
+
+<br><br>
+
+---
+
+## React에서 리스트 렌더링 (CRUD)
+
+### ⚡ Read
+
+new Date() : 시간 객체 생성 (빈 괄호 = 현재 시각)   
+getTime() : 숫자로 받음   
+
+``` js
+// DiaryList.js
+
+import DiaryItem from './DiaryItem.js';
+
+const DiaryList = ({ diaryList }) => {
+  return (
+  <div className="DiaryList">
+    <h2>일기 리스트</h2>
+    <h4>{diaryList.length}개의 일기가 있습니다</h4>
+    <div>
+      {diaryList.map((it) => (
+        <DiaryItem key={it.id} {...it}/>  
+      ))}
+    </div>
+  </div>
+  );
+};
+
+DiaryList.defaultProps = {
+  diaryList: [],
+}
+
+export default DiaryList;
+```
+
+> Error : Each child in a list should have a unique "key" prop.   
+> 자식 컴포넌트가 key prop을 받아야 함    
+> `<div key={it.id}>` 또는 idx    
+> but, 인덱스 순서 바뀌었을 경우 문제 생길 수 있음    
+> 고유한 아이디로 키를 지정하는 게 훨씬 현명    
+
+
+``` js
+// DiaryItem.js
+
+const DiaryItem = ({author, content, created_date, emotion, id}) => {
+  return (
+    <div className="DiaryItem">
+      <div className="info">
+        <span>작성자 : {author} | 감정점수 : {emotion}</span>
+        <br />
+        <span className="date">{new Date(created_date).toLocaleString()}</span>
+      </div>
+      <div className="content">{content}</div>
+    </div>
+  );
+};
+
+export default DiaryItem;
+```
+
+<br><br>
+
+### ⚡ Create
+
+React는 단방향으로만 데이터가 흐른다    
+> 위에서 아래로만
+
+
+DiaryEditor -> DiaryList에 데이터를 전달하려면    
+공통 부모에 state를 끌어올려 사용     
+
+![image](https://user-images.githubusercontent.com/93974908/210241416-e9cfe3bb-2830-4145-937e-babed2596e39.png)
+
+
+Event : 아래에서 위로 (CREATE, UPDATE, DELETE)       
+Data : 위에서 아래로    
+
+<br>
+
+``` js
+// App.js
+
+import './App.css';
+import DiaryEditor from './DiaryEditor';
+import DiaryList from './DiaryList';
+import { useState, useRef } from 'react';
+
+
+function App() {
+  
+  const [data, setData] = useState([]);
+
+  const dataId = useRef(0);
+
+  const onCreate = (author, content, emotion) => {
+    const created_date = new Date().getTime();
+    const newItem = {
+      author,
+      content, 
+      emotion,
+      created_date,
+      id: dataId.current,
+    };
+    dataId.current += 1;
+    setData([newItem, ...data]);
+  };
+
+  return (
+    <div className="App">
+      <header className="App-header">
+        <DiaryEditor onCreate={onCreate}/>
+        <DiaryList diaryList={data}/>
+      </header>
+    </div>
+  );
+}
+
+export default App;
+```
+
+``` js
+// DiaryEditor.js
+
+const DiaryEditor = ({onCreate}) => {
+
+  ...
+  const handleSubmit = () => {
+    if (state.author.length < 1) {
+      // focus
+      authorInput.current.focus();
+      return ;
+    } 
+    
+    if (state.content.length < 5) {
+      contentInput.current.focus();
+      // focus
+      return ;
+    }
+
+    onCreate(state.author, state.content, state.emotion);
+    alert("저장 성공");
+    setState({
+      author: "",
+      content: "",
+      emotion: 1,
+    })
+  };
+  ...
+};
+```
+함수를 prop으로 받음    
+
+
+<br><br>
+
+### ⚡ Delete
+
+삭제 버튼 - 각각의 아이템에 만듦  -> DiaryItem    
+
+onRemove : App.js -> DiaryList.js -> DiaryItem.js   
+
+``` js
+// App.js
+
+  const onRemove = (targetId) => {
+    const newDiaryList = data.filter((it) => it.id !== targetId);
+    setData(newDiaryList);
+  };
+
+  <DiaryList onRemove={onRemove} diaryList={data}/>
+```
+⬇
+``` js
+// DiaryList.js
+
+const DiaryList = ({ onRemove, diaryList }) => {
+  ...
+      {diaryList.map((it) => (
+        <DiaryItem key={it.id} {...it} onRemove={onRemove}/>  
+      ))}
+  ...
+};
+```
+
+⬇
+``` js
+// DiaryItem.js
+
+const DiaryItem = ({onRemove, author, content, created_date, emotion, id}) => {
+  return (
+    ...
+      <button onClick={() => {
+          if (window.confirm(`${id}번째 일기를 정말 삭제하시겠습니까?`)) {
+            onRemove(id);
+          }
+        }}
+      >
+        삭제하기
+      </button>
+    </div>
+  );
+};
+```
+함수가 너무 길다 -> 밖으로 빼자
+
+``` js
+  const handleRemove = () => {
+    if (window.confirm(`${id}번째 일기를 정말 삭제하시겠습니까?`)) {
+      onRemove(id);
+    }
+  }
+
+  ...
+  <button onClick={handleRemove}>
+    삭제하기
+  </button>
+  ...
+```
+
+
+<br><br>
+
+### ⚡ Update
+
+``` js
+// DiaryItem.js
+
+import { useRef, useState } from "react";
+
+const DiaryItem = ({
+  onEdit,
+  onRemove, 
+  author, 
+  content, 
+  created_date, 
+  emotion, 
+  id
+}) => {
+
+  const [isEdit, setIsEdit] = useState(false);
+  const toggleIsEdit = () => setIsEdit(!isEdit);
+
+  const [localContent, setLocalContent] = useState(content);
+  const localContentInput = useRef();
+
+  const handleRemove = () => {
+    if (window.confirm(`${id}번째 일기를 정말 삭제하시겠습니까?`)) {
+      onRemove(id);
+    }
+  };
+
+  const handleQuitEdit = () => {
+    setIsEdit(false);
+    setLocalContent(content);
+  };
+
+  const handleEdit = () => {
+    if (localContent.length < 5) {
+      localContentInput.current.focus();
+      return;
+    }
+
+    if (window.confirm(`${id}번째 일기를 수정하시겠습니까?`)){
+      onEdit(id, localContent)
+      toggleIsEdit();
+    }
+
+  }
+
+  return (
+    <div className="DiaryItem">
+      <div className="info">
+        <span>작성자 : {author} | 감정점수 : {emotion}</span>
+        <br />
+        <span className="date">{new Date(created_date).toLocaleString()}</span>
+      </div>
+      <div className="content">
+        {isEdit ? (
+          <>
+            <textarea 
+              ref={localContentInput}
+              value={localContent}
+              onChange={(e) => setLocalContent(e.target.value)}
+            />
+          </>
+        ) : (
+          <>{content}</>
+        )}
+      </div>
+
+      {isEdit ? (
+        <>
+          <button onClick={handleQuitEdit}>수정 취소</button>
+          <button onClick={handleEdit}>수정 완료</button>
+        </>
+      ) : (
+        <>
+          <button onClick={handleRemove}>삭제하기</button>
+          <button onClick={toggleIsEdit}>수정하기</button>
+        </>
+      )}
+    </div>
+  );
+};
+
+export default DiaryItem;
+```
+▫ isEdit : 수정 상태 여부를 나타냄 (true - 수정 중 / false)   
+▫ toggleIsEdit : isEdit 값을 반전하는 함수    
+▫ localContent : 수정하는 내용값 (현재 컴포넌트에서의 상태)    
+▫ handleQuitEdit : 수정 취소 => isEdit=false, localContent=content(원래 내용)   
+
+▫ handleEdit
+- 작성 시처럼 길이가 5 미만이면 focus 
+- onEdit으로 수정 - App.js로부터 온 함수
+- toggleIsEdit로 수정창 닫음  
+
+> focus를 위해 localContentInput로 DOM 요소 접근
+
+
+``` js
+// App.js
+
+  const onEdit = (targetId, newContent) => {
+    setData(
+      data.map((it) => 
+      it.id === targetId ? {...it, content: newContent} : it
+      )
+    );
+  };
+```
+
+수정 대상이라면 content 를 교체 / 아니라면 원래 상태 유지   
