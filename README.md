@@ -952,3 +952,544 @@ export default DiaryItem;
     );
   };
 ```
+
+<br><br>
+
+---
+
+## Lifecycle   
+
+React 컴포넌트도 생명주기 Lifecycle을 가짐   
+⚡ 탄생 ➡ 변화 ➡ 죽음 ⚡   
+
+탄생 : 화면에 나타나는 것     
+Mount
+
+변화 : 업데이트 (리렌더)    
+Update
+
+죽음 : 화면에서 사라짐    
+UnMount   
+
+
+### React Component Lifecycle Methods   
+Lifecycle마다 시행할 수 있는 메서드를 가짐    
+
+Mount : ComponentDidMount   
+Update : ComponentDidUpdate   
+Unmount : ComponentWillUnmount    
+> 클래스형 컴포넌트에서만 사용 가능   
+
+### ⭐ **React Hooks**   
+
+▫ 함수형 컴포넌트에서 클래스형 컴포넌트의 기능을 낚아채듯이 훔쳐와서 사용 가능하게 하는 도구들      
+- useState, useEffect, useRef 등   
+
+▫ Class형 컴포넌트의 길어지는 코드 길이 문제      
+▫ 중복 코드, 가독성 문제 등을 해결하기 위해 등장    
+
+<br>
+
+#### useEffect 
+▫ 첫 번째 파라미터 : 콜백함수   
+
+▫ 두 번째 파라미터 : Dependency Array (의존성 배열)
+- 이 배열 내에 들어있는 값이 변화하면 콜백함수가 수행됨
+
+<br>
+
+🌱 Mount    
+``` js
+  useEffect(() => {
+    console.log("Mount");
+  }, []);
+```
+
+<br>
+
+🌱 Update   
+``` js
+  useEffect(() => {
+    console.log("Update");
+  });
+```
+> Dependency Array 전달 X 
+
+
+▫ 감지하고 싶은 값만 감지해서, 해당 값이 변화하는 순간에만 콜백함수 수행 가능
+``` js
+  useEffect(() => {
+    console.log(`count is update : ${count}`)
+  }, [count]);
+
+  useEffect(() => {
+    console.log(`text is update : ${text}`)
+  }, [text]);
+```
+<br>
+
+<details>
+<summary>
+Lifecycle.js 코드 - Mount, Update
+</summary>
+
+
+``` js
+import React, {useEffect, useState} from 'react';
+
+const Lifecycle = () => {
+  const [count, setCount] = useState(0);
+  const [text, setText] = useState("");
+
+  useEffect(() => {
+    console.log("Mount");
+  }, []);
+
+  useEffect(() => {
+    console.log("Update");
+  });
+
+  useEffect(() => {
+    console.log(`count is update : ${count}`)
+  }, [count]);
+
+  useEffect(() => {
+    console.log(`text is update : ${text}`)
+  }, [text]);
+
+  return (
+  <div style={{padding: 20}}>
+    <div>
+      {count}
+      <button onClick={() => setCount(count+1)}>+</button>
+    </div>
+    <div>
+      <input value={text} onChange={(e) => setText(e.target.value)}/>
+    </div>
+  </div>
+  );
+};
+
+export default Lifecycle;
+```
+</details>
+
+<br>
+
+🌱 UnMount    
+``` js
+useEffect(() => {
+    console.log("Mount");
+    
+    return () => {
+      // Unmount 시점에 실행되게 됨
+      console.log("Unmount");
+    }
+  }, []);
+```
+
+``` js
+{isVisible && <UnmountTest/>}
+```
+
+**&&**    
+▫ isVisible이 True이면 뒤도 확인해야 하므로 UnmountTest 렌더링 O   
+▫ isVisible이 false이면 뒤는 확인 필요 X -> UnmountTest 렌더링 X    
+
+<br>
+
+<details>
+<summary>
+Lifecycle.js 코드 - Unmount
+</summary>
+
+``` js
+import React, {useEffect, useState} from 'react';
+
+const UnmountTest = () => {
+
+  useEffect(() => {
+    console.log("Mount");
+    
+    return () => {
+      // Unmount 시점에 실행되게 됨
+      console.log("Unmount");
+    }
+  }, []);
+
+  return <div>Unmount Testing Component</div>
+};
+
+
+const Lifecycle = () => {
+  const [isVisible, setIsVisible] = useState(false);
+  const toggle = () => setIsVisible(!isVisible);
+
+  return (
+  <div style={{padding: 20}}>
+    <button onClick={toggle}>ON/OFF</button>
+    {isVisible && <UnmountTest/>}
+  </div>
+  );
+};
+
+export default Lifecycle;
+```
+</details>
+
+<br><br>
+
+---
+
+## React에서 API 호출   
+> useEffect를 이용하여 컴포넌트 Mount 시점에 API를 호출하고 해당 API의 결과값을 일기 데이터의 초기값으로 이용하기
+
+``` js
+  const getData = async () => {
+    const res = await fetch(
+      'https://jsonplaceholder.typicode.com/comments'
+    ).then((res) => res.json());
+    
+    const initData = res.slice(0, 20).map((it) => {
+      return {
+        author : it.email,
+        content : it.body,
+        emotion : Math.floor(Math.random() * 5)+1,
+        created_date : new Date().getTime(),
+        id : dataId.current++
+      }
+    })
+
+    setData(initData);
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+```
+promise를 반환하는 비동기로 해당 API 주소의 json 파일 가져옴    
+데이터 중 20개를 뽑아 필요한 데이터만 매칭하여 입력   
+useEffect 활용하여 mount 될 때 API 요청 실행    
+
+<br><br>
+
+## React Developer Tools
+구글 확장 프로그램    
+
+Components    
+컴포넌트 계층 구조, state, props 등 정보 제공     
+
+Profiler    
+
+<br><br>
+
+---
+
+## 최적화
+
+### ☁ Memoization (연산 최적화)
+이미 계산 해 본 연산 결과를 기억 해 두었다가 동일한 계산을 시키면, 다시 연산하지 않고 기억 해 두었던 데이터를 반환 시키게 하는 방법   
+
+
+``` js
+  const getDiaryAnalysis = () => {
+    console.log("일기 분석 시작");
+
+    const goodCount = data.filter((it) => it.emotion >= 3).length;
+    const badCount = data.length - goodCount;
+    const goodRatio = (goodCount / data.length) * 100;
+    return {goodCount, badCount, goodRatio};
+  };
+
+  const {goodCount, badCount, goodRatio} = getDiaryAnalysis();
+```
+두 번 동작    
+1. mount 시 빈배열
+2. API 요청 후 데이터 바뀜 (리렌더)
+
+데이터 수정 시 마다 리렌더 (함수 재실행)    
+함수값이 바뀌지 않더라도    
+즉, 낭비가 심함
+
+⬇   
+**useMemo**   
+
+첫번째 인자 : 콜백함수    
+콜백함수가 리턴하는 값을 최적화할 수 있도록 도와줌    
+
+두번째 인자 : 해당 값이 변화할 때만 새로운 값 리턴    
+
+
+``` js
+  const getDiaryAnalysis = useMemo(() => {
+    console.log("일기 분석 시작");
+    
+    const goodCount = data.filter((it) => it.emotion >= 3).length;
+    const badCount = data.length - goodCount;
+    const goodRatio = (goodCount / data.length) * 100;
+    return {goodCount, badCount, goodRatio};
+  }, [data.length]);
+
+  const {goodCount, badCount, goodRatio} = getDiaryAnalysis;
+```
+
+useMemo로 함수를 감싸는 순간 그건 더 이상 함수가 아니라 값 !
+> 값을 리턴하므로
+
+<br><br>
+
+### ☁ 컴포넌트 재사용
+**React.memo**    
+함수형 컴포넌트에게 업데이트 조건을 걺    
+
+고차컴포넌트 : 컴포넌트를 가져와 새 컴포넌트를 반환하는 함수    
+똑같은 props를 받으면 리렌더링 X    
+> But, 자기 자신의 state가 바뀌는 건 리렌더링 O
+
+
+``` js
+const TextView = ({text} ) => {
+  useEffect(() => {
+    console.log(`update :: Text : ${text}`);
+  })
+  return <div>{text}</div>
+};
+
+const CountView = ({count}) => {
+  useEffect(() => {
+    console.log(`update :: count : ${count}`);
+  })
+  return <div>{count}</div>
+};
+```
+
+text, count 중 하나만 바뀌어도 두 컴포넌트 모두 리렌더링    
+
+⬇   
+
+``` js
+const TextView = React.memo(({text} ) => {
+  useEffect(() => {
+    console.log(`update :: Text : ${text}`);
+  })
+  return <div>{text}</div>
+});
+
+const CountView = React.memo(({count}) => {
+  useEffect(() => {
+    console.log(`update :: count : ${count}`);
+  })
+  return <div>{count}</div>
+});
+```
+
+<details>
+<summary>
+OptimizeTest.js 코드 1
+</summary>
+
+``` js
+import React, { useState, useEffect } from "react";
+
+const TextView = React.memo(({text} ) => {
+  useEffect(() => {
+    console.log(`update :: Text : ${text}`);
+  })
+  return <div>{text}</div>
+});
+
+const CountView = React.memo(({count}) => {
+  useEffect(() => {
+    console.log(`update :: count : ${count}`);
+  })
+  return <div>{count}</div>
+});
+
+
+const OptimizeTest = () => {
+
+  const [count, setCount] = useState(1);
+  const [text, setText] = useState("");
+
+  return (
+    <div style={{padding: 50}}>
+      <div>
+        <h2>count</h2>
+        <CountView count={count} />
+        <button onClick={() => setCount(count+1)}>+</button>
+      </div>
+      <div>
+        <h2>text</h2>
+        <TextView text={text} />
+        <input value={text} onChange={(e) => setText(e.target.value)} />
+      </div>
+    </div>
+  );
+};
+
+export default OptimizeTest;
+```
+
+</details>
+
+<br><br>
+
+<details>
+<summary>
+OptimizeTest.js 코드 2
+</summary>
+
+``` js
+import React, { useState, useEffect } from "react";
+
+const CounterA = React.memo(({count}) => {
+  useEffect(() => {
+    console.log(`counterA Update - count: ${count}`);
+  });
+
+  return <div>{count}</div>
+});
+
+const CounterB = React.memo(({obj}) => {
+  useEffect(() => {
+    console.log(`counterB Update - count: ${obj.count}`);
+  });
+
+  return <div>{obj.count}</div>
+});
+
+
+const OptimizeTest = () => {
+
+  const [count, setCount] = useState(1);
+  const [obj, setObj] = useState({
+    count: 1,
+  });
+
+  return (
+    <div style={{padding: 50}}>
+      <div>
+        <h2>Counter A</h2>
+        <CounterA count={count}/>
+        <button onClick={() => setCount(count)}>A button</button>
+      </div>
+      <div>
+        <h2>Counter B</h2>
+        <CounterB obj={obj} />
+        <button onClick={() => setObj({
+          count: obj.count,
+        })}>B button</button>
+      </div>
+    </div>
+  );
+};
+
+export default OptimizeTest;
+```
+
+</details>
+
+A 버튼 : A, B 둘 다 리렌더 X    
+B 버튼 : B 컴포넌트 리렌더 O    
+
+obj (객체) - 얕은 비교
+
+#### 객체를 비교하는 방법   
+얕은 비교 : 객체의 주소에 의한 비교 (값 X)    
+
+``` js
+let a = { count: 1 };
+let b = { count: 1 };
+
+if (a === b) {
+  console.log("EQUAL");
+} else {
+  console.log("NOT EQUAL");
+}
+``` 
+➡ NOT EQUAL    
+
+<br>
+
+``` js
+let a = { count: 1 };
+let b = a;
+
+if (a === b) {
+  console.log("EQUAL");
+} else {
+  console.log("NOT EQUAL");
+}
+``` 
+➡ EQUAL  
+> 같은 객체를 가리킴
+
+``` js
+React.memo(CounterB, areEqual);
+```
+CounterB는 areEqual에 판단에 따라 리렌더링 할지말지 결정하게 되는 메모화된 컴포넌트가 됨    
+
+<details>
+<summary>
+OptimizeTest.js 코드 2
+</summary>
+
+``` js
+import React, { useState, useEffect } from "react";
+
+const CounterA = React.memo(({count}) => {
+  useEffect(() => {
+    console.log(`counterA Update - count: ${count}`);
+  });
+
+  return <div>{count}</div>
+});
+
+const CounterB = ({obj}) => {
+  useEffect(() => {
+    console.log(`counterB Update - count: ${obj.count}`);
+  });
+
+  return <div>{obj.count}</div>
+};
+
+const areEqual = (prevProps, nextProps) => {
+  // 이전 프롭스와 현재 프롭스가 같으면 리렌더링 일으키지 않음
+  // 다르면 리렌더링을 일으킴
+  if (prevProps.obj.count === nextProps.obj.count) {
+    return true;
+  } 
+  return false;
+}
+
+const MemoizedCounterB = React.memo(CounterB, areEqual);
+
+const OptimizeTest = () => {
+
+  const [count, setCount] = useState(1);
+  const [obj, setObj] = useState({
+    count: 1,
+  });
+
+  return (
+    <div style={{padding: 50}}>
+      <div>
+        <h2>Counter A</h2>
+        <CounterA count={count}/>
+        <button onClick={() => setCount(count)}>A button</button>
+      </div>
+      <div>
+        <h2>Counter B</h2>
+        <MemoizedCounterB obj={obj} />
+        <button onClick={() => setObj({
+          count: obj.count,
+        })}>B button</button>
+      </div>
+    </div>
+  );
+};
+
+export default OptimizeTest;
+```
+
+</details>
