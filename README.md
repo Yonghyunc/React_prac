@@ -11,20 +11,19 @@
 ◽ 웹 브라우저에 포함된 자바스크립트 엔진으로 자바스크립트 실행    
 ➡ 사파리, 오페라, 웨일, 크롬, 엣지   
 
+<br>
 
-원시 타입 : 한 번에 하나의 값   
+▫ 원시 타입 : 한 번에 하나의 값   
 - 숫자형, 문자형, 불리언, null
 
+▫ 비원시 타입 : 한 번에 여러 개의 값
 
-비원시 타입 : 한 번에 여러 개의 값
+<br>
 
+수많은 파일 -> 패키지 - 어떤 파일 ? **package.json**
 
----
-
-수많은 파일 -> 패키지 - 어떤 파일 ? package.json
-
-scripts : 많이 사용하는 git 명령어 저장   
-dependencies : 외부 패키지    
+▫ **scripts** : 많이 사용하는 git 명령어 저장   
+▫ **dependencies** : 외부 패키지    
 ``` json
   "dependencies": {
     "randomcolor": "^0.6.2"
@@ -32,27 +31,33 @@ dependencies : 외부 패키지
 ```
 > ^ : 해당 버전 이상 
 
+<br><br>
+
 ---
 
 # 리액트 
-1. 산탄총 수술 : 중복코드로 인해 모든 페이지를 다 수정해야 하는 경우
+1️⃣ 산탄총 수술 : 중복코드로 인해 모든 페이지를 다 수정해야 하는 경우
    - 공통 요소를 쓰는데 산탄총 수술을 안 하게끔 해야 함
    - ➡ 공통요소를 별도의 파일로 저장하여(컴포넌트) 필요한 곳에서 불러서 사용 (컴포넌트화 방식)
 
 ✔ 리액트는 Component 기반의 UI 라이브러리
 
+<br>
 
-2. 
+2️⃣ 리액트는 선언형 프로그래밍
    - 명령형 프로그래밍 : 절차를 하나하나 다 나열 해야 함
      - jQuery
    - 선언형 프로그래밍 : 그냥 목적을 바로 말함
      - React
-  
-3. Virtual DOM
+
+<br>
+
+3️⃣ Virtual DOM
   - DOM : 문서 객체 모델 (브라우저가 실제로 사용하는 객체)
 
-
 <br><br>
+
+---
 
 # Create React App
 
@@ -63,12 +68,11 @@ dependencies : 외부 패키지
 ⭐ Babel    
 JSX 등의 쉽고 직관적인 자바스크립트 문법을 사용할 수 있도록 해주는 라이브러리   
 
-
 ⬇     
 이미 세팅 완료된 패키지 **Boiler Plate**    
 
 
-npx : npm을 좀 더 편리하게 이용 (설치되어 있지 않는 패키지를 한번만 사용)
+**npx** : npm을 좀 더 편리하게 이용 (설치되어 있지 않는 패키지를 한번만 사용)
 
 ```
 $ npx create-react-app reactexam1
@@ -77,21 +81,21 @@ $ npx create-react-app reactexam1
 
 `http://localhost:3000/`
 
-![image](https://user-images.githubusercontent.com/93974908/210176669-4501bc6c-d963-43d6-bd7e-150c8289fb22.png)
+![image](https://user-images.githubusercontent.com/93974908/210176669-4501bc6c-d963-43d6-bd7e-150c8289fb22.png){: width="50" height="50"}
 
 <br>
 
-App.js -> index.js    
-
+App.js ➡ index.js    
 App 함수가 반환하는 값이 id가 root인 div 아래로 들어감
 
-root는 어디에? public 폴더 내부 index.html 안
+❓ root는 어디에?     
+: public 폴더 내부 index.html 안
 
-### src 디렉토리
+#### src 디렉토리
 source code가 모여있는 곳 (js, css 등)
 
 
-App.js    
+### 💛 App.js    
 ``` js
 function App() {
   return (
@@ -147,8 +151,9 @@ function App() {
 a, br, img 등 html에서 닫는 태그 없이 사용한 태그들 -> `<br />` self-closing tag    
 
 ▫ 모든 요소를 감싸는 가장 바깥의 태그 == 최상위 태그 필수 !!  
-최상위 태그 대체 방법 ->  
-React.Fragment      
+
+<최상위 태그 대체 방법>   
+① React.Fragment      
 ``` js
 import React from 'react';
 
@@ -160,7 +165,7 @@ function App() {
   );
 }
 ```
-또는 빈태그   
+② 또는 빈태그   
 ``` js
 function App() {
   return (
@@ -177,7 +182,7 @@ function App() {
 
 ## CSS 적용     
 
-class -> className
+**class -> className**
 
 
 ▫ css 파일 import 하여 사용 가능    
@@ -239,7 +244,7 @@ function App() {
 ex) 다크 테마   
 
 
-▫ Counter     
+▫ 예시 : Counter     
 ``` js
 import React, {useState} from 'react';
 
@@ -270,16 +275,17 @@ const Counter = () => {
 
 export default Counter;
 ```
-rerender    
-컴포넌트는 자신이 가진 상태가 변화하면 화면을 rerender한다 (함수를 재호출한다)    
 
-여러 개의 state를 하나의 컴포넌트가 가질 수 O   
+▫ 컴포넌트는 자신이 가진 상태가 변화하면 화면을 rerender한다 (함수를 재호출한다)    
+
+▫ 여러 개의 state를 하나의 컴포넌트가 가질 수 O   
 
 <br><br>
 
 ## Props
 컴포넌트에 데이터를 전달하는 방법   
 
+▫ 스프레드 연산자로 props 전달 O    
 ``` js
 import MyHeader from './MyHeader';
 
@@ -301,18 +307,18 @@ function App() {
   );
 }
 ```
-스프레드 연산자로 props 전달 O    
 
-
-객체로 전달됨 -> .구문으로 사용   
+▫ 객체로 전달됨 -> 점문법(.)으로 사용   
 ``` js
 const Counter = (props) => {
-
+  
   const [count, setCount] = useState(props.initialValue);
 
   ...
 }
 ```
+
+▫ 비구조 할당으로도 받을 수 있음    
 
 ``` js
 const Counter = ({initialValue}) => {
@@ -322,18 +328,16 @@ const Counter = ({initialValue}) => {
   ...
 }
 ```
-비구조 할당으로도 받을 수 있음    
 
+▫ 제대로 전달받지 못했을 경우, default 값을 설정하여 에러 방지    
 ``` js
 Counter.defaultProps = {
   initialValue : 0,
 };
 ```
-제대로 전달받지 못했을 경우, default 값을 설정하여 에러 방지    
 
 
-동적인 데이터도 전달 O    
-
+▫ 동적인 데이터도 전달 O    
 ``` js
 const OddEvenResult = ({ count }) => {
   return <>{count % 2 === 0 ? "짝수" : "홀수"}</>
@@ -342,7 +346,7 @@ const OddEvenResult = ({ count }) => {
 export default OddEvenResult;
 ```
 
-props 로 컴포넌트 자체도 전달 가능    
+▫ props 로 컴포넌트 자체도 전달 가능    
 
 ``` js
   return (
@@ -356,6 +360,8 @@ props 로 컴포넌트 자체도 전달 가능
 ```
 
 ``` js
+// Container.js
+
 const Container = ({children}) => {
   return (
   <div style={{margin: 20, padding: 20, border: "1px solid grey" }}>
@@ -381,13 +387,17 @@ export default Container;
 
 <br><br>
 
-### DiaryEditor 컴포넌트
+### 📖 DiaryEditor 컴포넌트
 작성자    
 일기 본문   
 감정 점수   
 
-`onChange={(e)=>{}}` 
-전달받은 이벤트 객체 e
+<br>
+
+`onChange={(e)=>{}}` : 전달받은 이벤트 객체 e
+
+value ➡ state 네임   
+onChange ➡ e.target.value  
 
 ``` js
 // DiaryEditor.js
@@ -424,12 +434,7 @@ const DiaryEditor = () => {
 export default DiaryEditor;
 ```
 
-value => state 네임   
-onChange => e.target.value  
-
-⬇   
-동작이 비슷한 state들은 하나로 묶어줄 수 있음
-
+▫ 동작이 비슷한 state들은 하나로 묶어줄 수 있음
 ``` js
 // DiaryEditor.js
 
@@ -474,14 +479,18 @@ const DiaryEditor = () => {
 export default DiaryEditor;
 ```
 
-너무 많을 때 => spread 연산자 사용 O    
+▫ 너무 많을 때 => spread 연산자 사용 O    
 ```js
 setState({
   ...state,
   author: e.target.value,
 })
 ```
-원래의 state를 먼저 펼쳐주고 변경하고자 하는 property를 마지막에 작성 !! (순서 주의 !!)   
+❗ 원래의 state를 먼저 펼쳐주고 변경하고자 하는 property를 마지막에 작성 !! (순서 주의 !!) ❗  
+
+
+▫ handleChangeState 하나로 onChange 동시 처리 
+> name이 있어야 함 !!     
 
 ``` js
 import { useState } from "react";
@@ -523,12 +532,10 @@ const DiaryEditor = () => {
 export default DiaryEditor;
 ```
 
-handleChangeState 하나로 onChange 동시 처리 
-> name이 있어야 함 !!     
 
 <br><br>
 
-특정 길이 이상의 input이 들어왔는지 확인    
+### ⚡ 특정 길이 이상의 input이 들어왔는지 확인    
 
 ``` js
   const handleSubmit = () => {
@@ -547,11 +554,12 @@ handleChangeState 하나로 onChange 동시 처리
 ```
 > alert를 띄우는 것은 사용자 친화적이지 않음 -> focus
 
-어떤 DOM 요소에 focus를 줘야할까?     
+<br>
 
-**useRef**
+❓ 어떤 DOM 요소에 focus를 줘야할까 ❓       
 
-React.MutableRefObject => html DOM 요소에 접근하는 기능   
+**useRef**    
+React.MutableRefObject : html DOM 요소에 접근하는 기능   
 
 ``` js
 import { useState, useRef } from "react";
@@ -675,8 +683,7 @@ React는 단방향으로만 데이터가 흐른다
 > 위에서 아래로만
 
 
-DiaryEditor -> DiaryList에 데이터를 전달하려면    
-공통 부모에 state를 끌어올려 사용     
+DiaryEditor -> DiaryList에 데이터를 전달하려면 공통 부모에 state를 끌어올려 사용     
 
 ![image](https://user-images.githubusercontent.com/93974908/210241416-e9cfe3bb-2830-4145-937e-babed2596e39.png)
 
@@ -757,16 +764,16 @@ const DiaryEditor = ({onCreate}) => {
   ...
 };
 ```
-함수를 prop으로 받음    
+> 함수를 prop으로 받음    
 
 
 <br><br>
 
 ### ⚡ Delete
 
-삭제 버튼 - 각각의 아이템에 만듦  -> DiaryItem    
+▫ 삭제 버튼 : 각각의 아이템에 만듦 ➡ DiaryItem    
 
-onRemove : App.js -> DiaryList.js -> DiaryItem.js   
+▫ onRemove 전달 : App.js ➡ DiaryList.js ➡ DiaryItem.js   
 
 ``` js
 // App.js
@@ -810,7 +817,9 @@ const DiaryItem = ({onRemove, author, content, created_date, emotion, id}) => {
   );
 };
 ```
-함수가 너무 길다 -> 밖으로 빼자
+<br>
+
+▫ 함수가 너무 길다 -> 밖으로 빼서 사용
 
 ``` js
   const handleRemove = () => {
@@ -914,19 +923,24 @@ const DiaryItem = ({
 
 export default DiaryItem;
 ```
-▫ isEdit : 수정 상태 여부를 나타냄 (true - 수정 중 / false)   
-▫ toggleIsEdit : isEdit 값을 반전하는 함수    
-▫ localContent : 수정하는 내용값 (현재 컴포넌트에서의 상태)    
-▫ handleQuitEdit : 수정 취소 => isEdit=false, localContent=content(원래 내용)   
+① isEdit : 수정 상태 여부를 나타냄 (true - 수정 중 / false)   
 
-▫ handleEdit
+② toggleIsEdit : isEdit 값을 반전하는 함수    
+
+③ localContent : 수정하는 내용값 (현재 컴포넌트에서의 상태)   
+
+④ handleQuitEdit : 수정 취소 ➡ isEdit=false, localContent=content(원래 내용)   
+
+⑤ handleEdit    
 - 작성 시처럼 길이가 5 미만이면 focus 
 - onEdit으로 수정 - App.js로부터 온 함수
 - toggleIsEdit로 수정창 닫음  
 
 > focus를 위해 localContentInput로 DOM 요소 접근
 
+<br>
 
+**onEdit** : 수정 대상이라면 content 를 교체 / 아니라면 원래 상태 유지   
 ``` js
 // App.js
 
@@ -938,5 +952,3 @@ export default DiaryItem;
     );
   };
 ```
-
-수정 대상이라면 content 를 교체 / 아니라면 원래 상태 유지   
