@@ -1493,3 +1493,179 @@ export default OptimizeTest;
 ```
 
 </details>
+
+
+<br><br>
+
+### 컴포넌트 최적화
+
+**useCallback**     
+
+두 번째 인자로 전달한 dependency array 안에 있는 값이 변화하지 않으면, 첫 번째 인자로 전달한 콜백함수를 계속 재사용할 수 있게 해줌    
+
+
+함수형 업데이트   
+setData 에 함수를 전달   
+
+``` js
+  const onCreate = useCallback((author, content, emotion) => {
+    const created_date = new Date().getTime();
+    const newItem = {
+      author,
+      content, 
+      emotion,
+      created_date,
+      id: dataId.current,
+    };
+    dataId.current += 1;
+    setData((data) => [newItem, ...data]);
+  }, []);
+```
+
+<br><br>
+
+## 업그레이드 ❕ 
+
+### 1️⃣ 상태 변화 로직 분리하기
+상태 변화 처리 함수
+- onCreate
+- onEdit
+- onRemove
+
+useReducer    
+컴포넌트에서 상태변화 로직 분리
+(컴포넌트 가볍게 작성 가능) 
+
+0번째 인덱스 : state    
+1번째 인덱스 : 상태를 변화시키는 액션을 발생시키는 함수   
+reducer (첫 번째 인자) : 일어난 상태변화를 처리    
+두 번째 인자 : state의 초기값   
+
+dispatch가 호출되며 전달된 객체 = 액션 객체   
+(상태변화를 설명할 객체)    
+
+``` js
+const reducer = (state, action) => {
+  switch(action.type) {
+    case 'INIT' : {
+      return action.data;
+    }
+    case 'CREATE' : {
+      const created_date = new Date().getTime();
+      const newItem = {
+        ...action.data,
+        created_date
+      }
+      return [newItem, ...state];
+    }
+    case 'REMOVE' : {
+      return state.filter((it) => it.id !== action.targetId);
+    }
+    case 'EDIT' : {
+      return state.map((it) => 
+      it.id === action.targetId ? 
+      {...it, content:action.newContent} : it
+      );
+    }
+    default :
+      return state;
+  }
+}
+```
+
+``` js
+function App() {
+
+  const [data, dispatch] = useReducer(reducer, [])
+
+  const dataId = useRef(0);
+
+  const getData = async () => {
+    const res = await fetch(
+      'https://jsonplaceholder.typicode.com/comments'
+    ).then((res) => res.json());
+    
+    const initData = res.slice(0, 20).map((it) => {
+      return {
+        author : it.email,
+        content : it.body,
+        emotion : Math.floor(Math.random() * 5)+1,
+        created_date : new Date().getTime(),
+        id : dataId.current++
+      }
+    })
+
+    dispatch({type: 'INIT', data: initData});
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const onCreate = useCallback((author, content, emotion) => {
+
+    dispatch({type: 'CREATE', data: {author, content, emotion, id:dataId.current}})
+
+    dataId.current += 1;
+  }, []);
+
+  const onRemove = useCallback((targetId) => {
+    dispatch({type: 'REMOVE', targetId})
+  }, []);
+
+  const onEdit = useCallback((targetId, newContent) => {
+    dispatch({type: 'EDIT', targetId, newContent})
+  }, []);
+  ...
+};
+```
+
+
+<br><br>
+
+### 2️⃣ 컴포넌트 트리에 데이터 공급
+
+그냥 거쳐가기만 하는 Prop들이 존재함  
+-> 코드 작성, 수정에 악영향
+
+props 드릴링    
+
+
+![image](https://user-images.githubusercontent.com/93974908/210584067-aa23aa29-156f-4ca6-9eaa-9e17014fa6ca.png)
+
+공급자 컴포넌트의 자식 노드 영역 = Context (문맥)   
+
+▫ Context 생성    
+``` js
+const MyContext = React.createContext(defaultValue);
+```
+
+▫ Context Provider를 통한 데이터 공급   
+``` js
+<MyContext.Provider value={전역으로 전달하고자 하는 값}>
+  {이 context 안에 위치할 자식 컴포넌트들}
+</MyContext.Provider>
+```
+> children으로 컴포넌트 전달    
+
+자식 컴포넌트 수 제한 X   
+
+
+
+export
+- 여러개 사용 O
+- 비구조 할당을 통해서만 import 가능
+
+export default
+- 하나만 사용 O
+
+
+useContext    
+
+prop 전달 X   
+hooks의 context 에서 확인 가능    
+
+함수 또한 context로 공급 O    
+
+state가 바뀔 때마다 리렌더링되기 때문에 value에 X  
+새로운 DiaryDispatchContext 생성    
