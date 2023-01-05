@@ -1499,7 +1499,7 @@ export default OptimizeTest;
 
 ### 컴포넌트 최적화
 
-**useCallback**     
+✨ **useCallback**     
 
 두 번째 인자로 전달한 dependency array 안에 있는 값이 변화하지 않으면, 첫 번째 인자로 전달한 콜백함수를 계속 재사용할 수 있게 해줌    
 
@@ -1532,14 +1532,14 @@ setData 에 함수를 전달
 - onEdit
 - onRemove
 
-useReducer    
+✨ **useReducer**    
 컴포넌트에서 상태변화 로직 분리
 (컴포넌트 가볍게 작성 가능) 
 
-0번째 인덱스 : state    
-1번째 인덱스 : 상태를 변화시키는 액션을 발생시키는 함수   
-reducer (첫 번째 인자) : 일어난 상태변화를 처리    
-두 번째 인자 : state의 초기값   
+▫ 0번째 인덱스 : state    
+▫ 1번째 인덱스 : 상태를 변화시키는 액션을 발생시키는 함수   
+▫ reducer (첫 번째 인자) : 일어난 상태변화를 처리    
+▫ 두 번째 인자 : state의 초기값   
 
 dispatch가 호출되며 전달된 객체 = 액션 객체   
 (상태변화를 설명할 객체)    
@@ -1648,24 +1648,145 @@ const MyContext = React.createContext(defaultValue);
 ```
 > children으로 컴포넌트 전달    
 
-자식 컴포넌트 수 제한 X   
+▫ 자식 컴포넌트 수 제한 X   
 
 
 
-export
-- 여러개 사용 O
-- 비구조 할당을 통해서만 import 가능
+> export
+> - 여러개 사용 O
+> - 비구조 할당을 통해서만 import 가능
+>
+> export default
+> - 하나만 사용 O
 
-export default
-- 하나만 사용 O
 
+✨ **useContext**    
 
-useContext    
+▫ prop 전달 X   
+▫ hooks의 context 에서 확인 가능    
 
-prop 전달 X   
-hooks의 context 에서 확인 가능    
-
-함수 또한 context로 공급 O    
+▫ 함수 또한 context로 공급 O    
 
 state가 바뀔 때마다 리렌더링되기 때문에 value에 X  
 새로운 DiaryDispatchContext 생성    
+
+``` js
+export const DiaryStateContext = React.createContext();
+export const DiaryDispatchContext = React.createContext();
+
+return (
+    <DiaryStateContext.Provider value={data}>
+      <DiaryDispatchContext.Provider value={memoizedDispatches}>
+        ...
+      </DiaryDispatchContext.Provider>
+    </DiaryStateContext.Provider>
+  );
+```
+
+<br><br>
+
+---
+
+# 😋 Page Routing  
+
+**Routing**   
+▫ 어떤 네트워크 내에서 통신 데이터를 보낼 경로를 선택하는 일련의 과정   
+
+▫ Router : 데이터의 경로를 실시간으로 지정해주는 역할을 하는 무언가   
+
+▫ Route + ing : 경로를 정해주는 행위 자체와 그런 과정들을 다 포함하여 일컫는 말   
+
+> 카카오톡을 통해 메세지를 여러 경로를 통해 보내는 것  
+
+<br>
+
+Page Routing
+
+▫ 인터넷을 사용해 웹사이트 접속 : 브라우저를 통해 웹 서버에 경로의 요청을 날리고 웹 문서를 받아보는 과정    
+> /home : Home.html   
+> /mypage : Mypage.html   
+
+▫ 요청에 명시된 경로에 따라 알맞은 페이지를 선택하게 하는 과정    
+
+▫ 웹 서버가 요청에 명시되어 있는 경로에 따라 알맞은 페이지를 선택하고 그 페이지를 반환해서 사용자가 그 페이지에 접속하는 과정 자체    
+
+<br>
+
+MPA (Multipage Application)   
+- 페이지가 여러 개
+- 각각의 페이지 이동마다 새로운 페이지를 요청
+- 페이지 깜빡이며 이동
+
+SPA (Single Page Application) - react   
+- 페이지가 하나
+- 페이지 전환이 빠름
+- 페이지 이동 시 서버에 데이터만 요청
+
+CSR (Client Side Rendering)   
+
+<br><br>
+
+### react router  
+> 설치 시 @ 붙여서 버전 명시 
+
+```
+$ npm install react-router-dom@6
+```
+Route 컴포넌트 : 실질적으로 url 경로와 컴포넌트 매핑    
+
+Routes 안 부분만 바뀜   
+모든 페이지에 나타나는 요소 사용 -> Routes 바깥   
+
+``` js
+<a href={"/new"}>NEW로 이동</a>
+```
+사용 시 페이지 새로고침 O  -> SPA의 빠른 페이지 이동 (쾌적한 사용자 경험) 사용 불가   
+> a태그로 페이지 이동 -> 외부 페이지로 나갈 때만 사용
+
+
+``` js
+// RouteTest.js
+
+import { Link } from "react-router-dom";
+
+const RouteTest = () => {
+  return (
+    <>
+      <Link to={"/"}>HOME</Link>
+      <br />
+      <Link to={"/diary"}>DIARY</Link>
+      <br />
+      <Link to={"/new"}>NEW</Link>
+      <br />
+      <Link to={"/edit"}>EDIT</Link>
+    </>
+  );
+};
+
+export default RouteTest;
+```
+
+``` js
+// App.js
+
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+
+...
+
+function App() {
+  return (
+    <BrowserRouter>
+      <div className="App">
+        <h2>App.js</h2>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/new" element={<New />} />
+          <Route path="/edit" element={<Edit />} />
+          <Route path="/diary" element={<Diary />} />
+        </Routes>
+        <RouteTest />
+      </div>
+    </BrowserRouter>
+  );
+}
+```
