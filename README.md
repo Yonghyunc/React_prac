@@ -1790,3 +1790,66 @@ function App() {
   );
 }
 ```
+
+<br><br>
+
+### React Router V6
+React에서 CSR 기반의 페이지 라우팅을 할 수 있게 해주는 라이브러리   
+
+1️⃣ Path Variable   
+- useParams
+
+``` js
+const {id} = useParams();
+```
+
+
+2️⃣ Query String    
+- useSearchParams
+- 웹 페이지에 데이터를 전달하는 가장 간단한 방법
+- `/edit?id=10&mode=dark`
+- 두 개의 인자로 반환 받을 수 있음 
+  - 첫 번째 인자 : get을 통해 전달 받은 쿼리 스트링을 꺼내 쓸 수 있음
+  - 두 번째 인자 : 첫 번째 인자를 바꿀 수 있음 
+
+``` js
+const [searchParams, setSearchParams] = useSearchParams();
+const id = searchParams.get('id');
+const mode = searchParams.get('mode');
+
+<button onClick={() => setSearchParams({who: "winter"})}>QS 바꾸기</button>
+```
+
+3️⃣ Page Moving   
+- useNavigate
+
+``` js
+const navigate = useNavigate();
+
+<button onClick={() => navigate("/home")}>HOME으로 가기</button>
+<button onClick={() => navigate(-1)}>뒤로 가기</button>
+```
+
+<br><br>
+
+---
+
+## 프로젝트 진행   
+1. 폰트 세팅
+   1. font-family : 가장 마지막꺼 적용 / 같은 줄일 때는 왼쪽꺼 적용
+2. 레이아웃 세팅
+   1. 모든 페이지에 반영되는 레이아웃
+   2. @media : 반응형
+3. 이미지 에셋 세팅
+   1. public/assets
+   2. process.env.PUBLIC_URL : 어떤 위치에 있든 `/public` 디렉토리를 가리킴
+``` js
+const env = process.env;
+env.PUBLIC_URL = env.PUBLIC_URL || "";
+```
+> env.PUBLIC_URL에 env.PUBLIC_URL이 존재하면 담고, 아니면 비워라
+
+4. 공통 컴포넌트 세팅
+- UI 요소가 어떤 기준으로 얼마만큼 변화하는가를 찾아 패턴화
+
+
