@@ -1849,7 +1849,179 @@ env.PUBLIC_URL = env.PUBLIC_URL || "";
 ```
 > env.PUBLIC_URL에 env.PUBLIC_URL이 존재하면 담고, 아니면 비워라
 
+``` js
+<img src={process.env.PUBLIC_URL + `/assets/emotion1.png`} />
+```
+
+
 4. 공통 컴포넌트 세팅
 - UI 요소가 어떤 기준으로 얼마만큼 변화하는가를 찾아 패턴화
 
+<details>
+<summary>버튼</summary>
+
+``` js
+const MyButton = ({text, type, onClick}) => {
+
+  const btnType = ['positive', 'negative'].includes(type) ? type:'default';
+
+  return (
+    <button 
+      className={["MyButton", `MyButton_${btnType}`].join(" ")} 
+      onClick={onClick}
+    >
+      {text}
+    </button>
+  )
+};
+
+MyButton.defaultProps = {
+  type: "default",
+};
+
+export default MyButton;
+```
+
+``` js
+<MyButton text={"버튼"} onClick={() => alert("버튼 클릭")} type={"positive"}/>
+<MyButton text={"버튼"} onClick={() => alert("버튼 클릭")} type={"negative"}/>
+<MyButton text={"버튼"} onClick={() => alert("버튼 클릭")} />
+```
+</details>
+
+
+
+<detail>
+<summary>헤더</summary>
+
+``` js
+const MyHeader = ({headText, leftChild, rightChild}) => {
+  return (
+    <header>
+      <div className="head_btn_left">
+        {leftChild}
+      </div>
+      <div className="head_text">
+        {headText}
+      </div>
+      <div className="head_btn_right">
+        {rightChild}
+      </div>
+    </header>
+  )
+};
+
+export default MyHeader;
+```
+``` js
+<MyHeader 
+  headText={"App"} 
+  leftChild={
+    <MyButton text={'왼쪽 버튼'} onClick={() => alert("왼쪽 클릭")} />} 
+  rightChild={
+    <MyButton text={'오른쪽 버튼'} onClick={() => alert("오른쪽 클릭")} />} 
+/>
+```
+</detail>
+
+5. 상태 관리 세팅
+
+``` js
+const reducer = (state, action) => {
+  let newState = [];
+  switch (action.type) {
+    case "INIT": {
+      return action.data;
+    }
+    case "CREATE": {
+      newState = [action.data, ...state];
+      break;
+    }
+    case "REMOVE": {
+      newState = state.filter((it) => it.id !== action.targetId);
+      break;
+    }
+    case "EDIT": {
+      newState = state.map((it) =>
+        it.id === action.data.id ? { ...action.data } : it
+      );
+      break;
+    }
+    default:
+      return state;
+  }
+  return newState;
+};
+```
+
+``` js
+function App() {
+  const [data, dispatch] = useReducer(reducer, []);
+
+  const dataId = useRef(0);
+
+  // CREATE
+  const onCreate = (date, content, emotion) => {
+    dispatch({
+      type: "CREATE",
+      data: {
+        id: dataId.current,
+        date: new Date(date).getTime(),
+        content,
+        emotion,
+      },
+    });
+    dataId.current += 1;
+  };
+
+  // REMOVE
+  const onRemove = (targetId) => {
+    dispatch({ type: "REMOVE", targetId });
+  };
+
+  // EDIT
+  const onEdit = (targetId, date, content, emotion) => {
+    dispatch({
+      type: "EDIT",
+      data: {
+        id: targetId,
+        date: new Date(date).getTime(),
+        content,
+        emotion,
+      },
+    });
+  };
+  ...
+};
+```
+
+> return을 하지 않을 거라면 break를 걸어줘야 함   
+
+
+
+6. 프로젝트 State Context 세팅
+
+``` js
+export const DiaryStateContext = React.createContext();
+```
+
+7. 프로젝트 Dispatch Context 세팅
+``` js
+export const DiaryDispatchContext = React.createContext();
+```
+
+<br><br>
+
+> getMonth : 0월부터 시작하므로 + 1을 해줘야 함 
+
+깊은 복사
+`const copyList = JSON.parse(JSON.stringify(diaryList))`
+
+JSON.stringify : 배열을 JSON화시켜 문자열로 바꿔줌      
+JSON.parse : 문자열로 반환된 것을 다시 배열로 복구함    
+
+parseInt : 문자열을 숫자로 바꿔주는 함수    
+
+
+getProcessedDiaryList => 최신순, 오래된 순인지 if문으로 분기를 달아 정렬된 리스트를 반환하는 함수   
 
