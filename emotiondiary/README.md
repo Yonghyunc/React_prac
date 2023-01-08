@@ -1,70 +1,139 @@
-# Getting Started with Create React App
+에러...   
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+```js
+emotion_img: process.env.PUBLIC_URL + `assets/emotion1.png`,
+```
+로 하면 이미지가 잘 안 뜰거임.... (뜰 수도 있지만)    
 
-## Available Scripts
+```js
+emotion_img: process.env.PUBLIC_URL + `/assets/emotion1.png`,
+```
+꼭 이렇게 하자...
 
-In the project directory, you can run:
+<br><br>
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 흔히 발생하는 버그 수정하기    
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 1️⃣ Encountered two children
 
-### `npm test`
+> 겹치는 키 발생 ?    
+> 왜 겹쳤는지 확인
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+react-dom.development.js:86 Warning: Encountered two children with the same key, `1`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+```
+ref 객체의 초기값을 0으로 설정함    
+BUT 더미데이터의 아이디값이 1 ~ 5까지 있음    
+즉, 초기값을 6부터 시작했어야 함    
 
-### `npm run build`
+### 2️⃣ 오타 -> 버그 발생 
+타입스크립트 배우던지 ㅋㅋ    
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 3️⃣ 31일 일기가 안 나옴 
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+▶ 기존    
+``` js
+const lastDay = new Date(
+  curDate.getFullYear(),
+  curDate.getMonth() + 1,
+  0
+).getTime();
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+▶ 변경    
+``` js
+const lastDay = new Date(
+  curDate.getFullYear(),
+  curDate.getMonth() + 1,
+  0,
+  23,
+  59,
+  59
+).getTime();
+```
 
-### `npm run eject`
+> 자바스크립트의 시간 객체를 사용해서 시간을 비교할 때, 시분초 까지 활용하여야 함   
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+<br><br> 
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## LocalStorage를 일기 데이터베이스로 사용하기    
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+state의 값은 휘발성 메모리 -> DB에 값 저장    
 
-## Learn More
+**Web Storage API**     
+브라우저에서 키/값 쌍을 쿠키보다 훨씬 직관적으로 저장할 수 있는 방법 제공   
+- SessionStorage
+  - 브라우저가 열려있는 동안만 제공  
+- LocalStorage 
+  - 브라우저를 닫았다 열어도 데이터가 남아있음 
+  - 본인의 웹 브라우저에 저장 (개인적 데이터베이스)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+객체 저장 시, JSON.stringify를 통해 직렬화 해줘야 함    
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+``` js
+  useEffect(() => {
+    localStorage.setItem("item1", 10);
+    localStorage.setItem("item2", "20");
+    localStorage.setItem("item3", JSON.stringify({value: 30}));
+  }, []);
+```
 
-### Code Splitting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+기본적으로 localStorage에 들어가는 값은 문자열로 바뀌어 들어감    
+즉, 나올 때도 문자열로 바뀌어서 나옴    
+꺼내올 때 형변환 필요   
 
-### Analyzing the Bundle Size
+``` js
+  useEffect(() => {
+    const item1 = localStorage.getItem("item1");
+    const item2 = localStorage.getItem("item2");
+    const item3 = JSON.parse(localStorage.getItem("item3"));
+    console.log({item1, item2, item3});
+  }, []);
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+<br>
 
-### Making a Progressive Web App
+일기에 대한 작성, 수정 등이 전부 reducer에서 일어남   
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+``` js
+const reducer = (state, action) => {
+  let newState = [];
+  ...
 
-### Advanced Configuration
+  localStorage.setItem('diary', JSON.stringify(newState));
+  return newState;
+};
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+return 전에 localStorage에 저장해줌   
 
-### Deployment
+<br><br>
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+localStorage에 있는 데이터 불러오기   
 
-### `npm run build` fails to minify
+``` js
+  useEffect(() => {
+    const localData = localStorage.getItem("diary");
+    if (localData) {
+      const diaryList = JSON.parse(localData).sort((a, b) => parseInt(b.id) - parseInt(a.id));
+      dataId.current = parseInt(diaryList[0].id) + 1;
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+      dispatch({type: "INIT", data: diaryList});
+    }
+  }, [])
+```
+
+
+<br><br>
+
+---
+
+## 프로젝트 최적화
+
+React.memo : 컴포넌트를 감싸면 강화된 컴포넌트를 돌려주는 고차 컴포넌트     
+memoization 
