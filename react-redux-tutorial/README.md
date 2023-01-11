@@ -1,70 +1,115 @@
-# Getting Started with Create React App
+### 액션 타입 정의    
+▫ 대문자로 정의     
+▫ '모듈 이름/액션 이름' 
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+``` js
+const INCREASE = 'counter/INCREASE';
+const DECREASE = 'counter/DECREASE';
+```
 
-## Available Scripts
+<br>
 
-In the project directory, you can run:
+### 액션 생성 함수    
 
-### `npm start`
+``` js
+export const increase = () => ({ type : INCREASE });
+export const decrease = () => ({ type : DECREASE });
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+<br>
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 초기 상태와 리듀서 함수
+``` js
+const initialState = {
+  number: 0
+};
+```
 
-### `npm test`
+``` js
+function counter(state = initialState, action) {
+  switch (action.type) {
+    case INCREASE:
+      return {
+        number: state.number + 1
+      };
+    case DECREASE:
+      return {
+        number: state.number - 1
+      };
+    default:
+      return state;
+  }
+}
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+export default counter;
+```
 
-### `npm run build`
+▫ export : 여러 개 내보내기 가능    
+▫ export default : 단 한개만 내보내기 가능    
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+▫ 불러오기
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+``` js
+import counter from './counter';
+import { increase, decrease } from './counter';
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+<br>
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 루트 리듀서
+▫ createStore 함수를 사용하여 스토어를 만들 때는 리듀서를 하나만 사용해야 함 -> 기존의 리듀서를 하나로 합쳐줌   
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+▫ combineReducers   
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+> 파일 이름을 index.js로 설정하면 나중에 불러올 때 디렉터리 이름까지만 입력하여 불러올 수 있음
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+<br>
 
-## Learn More
+### 스토어 생성
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+``` js
+// src/index.js
+const store = createStore(rootReducer);
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Provider 컴포넌트 사용하여 프로젝트에 리덕스 적용
 
-### Code Splitting
+``` js
+import {createStore} from 'redux';
+import {Provider} from 'react-redux';
+import rootReducer from './modules';
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+const store = createStore(rootReducer);
 
-### Analyzing the Bundle Size
+const root = ReactDOM.createRoot(
+  document.getElementById('root'));
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+root.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+);
+```
+▫ store을 props로 전달해줘야 함   
 
-### Making a Progressive Web App
+<br>
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Redux DevTools 
+```
+npm install --save redux-devtools-extension
+```
+▫ 패키지를 설치하더라도 크롬 확장프로그램은 설치해야 함   
 
-### Advanced Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+<br>
 
-### Deployment
+## 리덕스 더 편하게 사용하기
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### redux-actions
 
-### `npm run build` fails to minify
+``` 
+npm install --save redux-actions --legacy-peer-deps
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+▫ 
