@@ -1,11 +1,13 @@
-
-
-const MemberList = () => {
+const MemberList = ({ members }) => {
   return (
-    <div>
-      <h2>회원 목록</h2>
-    </div>
-  )
+    <ul>
+      {members.map((member) => (
+        <li key={member.member_id}>
+          {member.member_id} : {member.nickname} - {member.email}
+        </li>
+      ))}
+    </ul>
+  );
 };
 
 export default MemberList;
