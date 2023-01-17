@@ -1,0 +1,60 @@
+.boardlist-div {
+  background-color: gainsboro;
+  width: 60%;
+  margin: auto;
+  border-radius: 30px;
+  padding: 20px;
+  padding-left: 40px;
+  padding-right: 40px;
+  margin-top: 30px;
+  text-align: left;
+
+  .writer {
+    font-size: small;
+  }
+}
+
+.board-post-form {
+  width: 400px;
+  margin: auto;
+  border: 2px solid rgb(174, 185, 174);
+  border-radius: 20px;
+  padding-bottom: 20px;
+
+  div {
+    width: 400px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    
+    label {
+      display: inline-block;
+      width: 50px;
+      margin-right: 20px;
+    }
+
+    input, textarea {
+      width: 250px;
+      border-radius: 10px;
+      border: 1px solid rgb(206, 206, 206);
+    }
+
+    input {
+      height: 30px;
+    }
+
+    textarea {
+      height: 100px;
+    }
+  }
+
+  button {
+    padding: 5px;
+    width: 70px;
+    border: none;
+    border-radius: 5px;
+    background-color: rgb(157, 197, 157);
+    box-shadow: 1px 2px 0px 0px rgb(168, 168, 168);
+
+  }
+}
