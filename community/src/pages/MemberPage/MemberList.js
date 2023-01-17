@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getMember } from '../../modules/member';
+import './Member.css';
 
 const MemberList = () => {
   const dispatch = useDispatch();
@@ -11,16 +12,15 @@ const MemberList = () => {
     dispatch(getMember());
   }, [dispatch]);
 
-
   return (
     <div>
-      <ul>
+      <div className="memberlist-div">
         {members.map((member) => (
-        <li key={member.member_id}>
-          {member.member_id} : {member.nickname} - {member.email}
-        </li>
+          <div className="member-div" key={member.member_id}>
+            {member.member_id} : {member.nickname} - {member.email}
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };
