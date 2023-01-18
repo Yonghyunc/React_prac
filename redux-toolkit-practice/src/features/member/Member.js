@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // import { unwrapResult } from '@reduxjs/toolkit';
-import { axiosGetMembers, axiosDeleteMember } from './memberSlice';
+import { axiosGetMembers } from './memberSlice';
 import './Member.scss';
 import MemberPost from './MemberPost';
+import MemberList from './MemberList';
 
 const Member = () => {
   const dispatch = useDispatch();
@@ -18,22 +19,13 @@ const Member = () => {
 
   console.log(members);
 
-  const memberDelete = (id) => {
-    dispatch(axiosDeleteMember(id));
-  };
-
   return (
     <div>
       <MemberPost />
       <h2>멤버 리스트</h2>
       <div className="memberlist-div">
         {members.map((member) => (
-          <div className="member-div" key={member.member_id}>
-            <h4>{member.member_id}</h4>
-            <p>{member.nickname}</p>
-            <p>{member.email}</p>
-            <button onClick={memberDelete(member.member_id)}>삭제</button> 
-          </div>
+          <MemberList member={member} key={member.member_id} />
         ))}
       </div>
     </div>
