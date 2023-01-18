@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Header from './components/header/Header';
 import CommunityPage from './pages/CommunityPage';
+import CommunityWritePage from './pages/CommunityWritePage';
 import ConsultingPage from './pages/ConsultingPage';
 import LoginPage from './pages/LoginPage';
 import MainPage from './pages/MainPage';
@@ -30,6 +31,7 @@ function App() {
           <Route path="/together" element={<TogetherPage />} />
           {/* 쑥덕쑥덕 */}
           <Route path="/community" element={<CommunityPage />} />
+          <Route path="/community/write" element={<CommunityWritePage />} />
           <Route path="/profile" element={<ProfilePage />} />
         </Routes>
       </BrowserRouter>

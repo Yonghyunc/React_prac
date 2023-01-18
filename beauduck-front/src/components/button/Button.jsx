@@ -2,7 +2,7 @@ import './Button.style.scss';
 
 const Button = ({ btnStyle, text, onClickEvent }) => {
   return (
-    <button className={btnStyle} text={text} onClick={() => onClickEvent()}>
+    <button className={["normal-btn", `${btnStyle}`].join(" ")} text={text} onClick={() => onClickEvent()}>
       {text}
     </button>
   );
