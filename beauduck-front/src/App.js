@@ -13,6 +13,11 @@ import SignupPage from './pages/SignupPage';
 import SinglePage from './pages/SinglePage';
 import TogetherPage from './pages/TogetherPage';
 
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faXmark);
+
 function App() {
   return (
     <>

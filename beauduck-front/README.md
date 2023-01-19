@@ -10,3 +10,8 @@ npm add react-router-dom
 npm install node-sass
 ```
 
+
+color-pick      
+```
+npm install react-color --save
+```
