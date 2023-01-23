@@ -1,13 +1,22 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+// export const axiosGetMembers = createAsyncThunk(
+//   'member/axiosGetMembers',
+//   async () => {
+//     return axios({
+//       method: 'get',
+//       url: 'http://13.209.252.39:8080/member',
+//     }).then((res) => res.data);
+//   },
+// );
+
 export const axiosGetMembers = createAsyncThunk(
-  'member/axiosGetMembers',
+  // action 이름
+  'member/GetMembers',
   async () => {
-    return axios({
-      method: 'get',
-      url: 'http://13.209.252.39:8080/member',
-    }).then((res) => res.data);
+    const res = await axios.get('http://13.209.252.39:8080/member');
+    return res.data;
   },
 );
 
